@@ -26,7 +26,7 @@ func main() {
 		stackA.Push(n)
 	}
 	operator := NewStackOperator(stackA)
-	operator.InsertionSort()
+	operator.MidPointSort()
 	for _, operation := range operator.GetOperations() {
 		fmt.Println(operation)
 	}

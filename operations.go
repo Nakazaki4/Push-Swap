@@ -22,7 +22,7 @@ func (op *StackOperator) GetOperations() []string {
 	return op.ops
 }
 
-// push the top first element of stack 'a' to stack 'b'
+// push the top first element of stack 'b' to stack 'a'
 func (op *StackOperator) PA() error {
 	if op.stackB.IsEmpty() {
 		return errors.New("stack B is empty")
@@ -36,7 +36,7 @@ func (op *StackOperator) PA() error {
 	return nil
 }
 
-// Push the top first element of stack 'b' to stack 'a'
+// Push the top first element of stack 'a' to stack 'b'
 func (op *StackOperator) PB() error {
 	if op.stackA.IsEmpty() {
 		return errors.New("stack A is empty")
