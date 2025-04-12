@@ -10,13 +10,9 @@ func (op *StackOperator) Sort() {
 	isSorted := false
 
 	for !isSorted {
+		op.CyclicSort(op.stackA)
 
-		if op.stackA.Size() <= 6 {
-			op.CyclicSort(op.stackA)
-			fmt.Println(op.stackA.items)
-		}
 		op.CyclicSort(op.stackB)
-		fmt.Println(op.stackB.items)
 
 		// Check if stack A is sorted
 		if op.isStackASorted() {
@@ -28,21 +24,22 @@ func (op *StackOperator) Sort() {
 }
 
 func (op *StackOperator) CyclicSort(stack *Stack) {
-	mid := op.findMid()
 	if stack == op.stackA {
+		mid := op.findMid(op.stackA)
 		for range op.stackA.Size() {
 			top, _ := op.stackA.Peek()
 			if top < mid {
 				op.PB()
 			} else {
 				op.RA()
-			}
-			if op.stackA.Size() == 2 && top > mid {
-				op.SA()
-				break
+				if op.stackA.Size() == 2 && top > mid {
+					op.SA()
+					break
+				}
 			}
 		}
 	} else if stack == op.stackB {
+		mid := op.findMid(op.stackB)
 		for range op.stackB.Size() {
 			top, _ := op.stackB.Peek()
 			if top > mid {
@@ -50,14 +47,40 @@ func (op *StackOperator) CyclicSort(stack *Stack) {
 			} else {
 				op.RB()
 			}
-			if op.stackB.Size() == 2 && top < mid {
-				op.SB()
-				op.PA()
-				op.PA()
+			if op.stackB.Size() == 2 {
+				top, _ = op.stackB.Peek()
+				if top > mid {
+					op.PA()
+					op.PA()
+					break
+				} else {
+					op.SB()
+					op.PA()
+					op.PA()
+				}
+
 			}
 		}
 	}
+}
 
+func (op *StackOperator) CompareTopElements(midA, midB int) {
+	topA, _ := op.stackA.Peek()
+	topB, _ := op.stackB.Peek()
+
+	if topA
+}
+
+func (op *StackOperator) NextElementIndex(stack *Stack, midPoint int) int {
+	elements := stack.items
+	index := 0
+	for i, element := range elements {
+		if element < midPoint {
+			index = i
+			break
+		}
+	}
+	return index
 }
 
 func (op *StackOperator) isStackASorted() bool {
@@ -73,12 +96,11 @@ func (op *StackOperator) isStackASorted() bool {
 			return false
 		}
 	}
-
 	return true
 }
 
-func (op *StackOperator) findMid() int {
-	s := op.stackA.items
+func (op *StackOperator) findMid(stack *Stack) int {
+	s := stack.items
 	sort.Ints(s)
 	return s[len(s)/2]
 }
