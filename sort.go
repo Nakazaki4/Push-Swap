@@ -5,25 +5,47 @@ import (
 	"sort"
 )
 
+type Graph struct {
+	possibilities [][]string
+}
+
 func (op *StackOperator) Sort() {
 
 	isSorted := false
 
 	for !isSorted {
-		op.CyclicSort(op.stackA)
+		op.MidSort(op.stackA)
 
-		op.CyclicSort(op.stackB)
+		op.MidSort(op.stackB)
 
 		// Check if stack A is sorted
-		if op.isStackASorted() {
+		if op.isStackASorted() && op.stackB.IsEmpty() {
 			fmt.Println(op.stackA.items)
 			isSorted = true
 		}
 	}
-
 }
 
-func (op *StackOperator) CyclicSort(stack *Stack) {
+func (op *StackOperator) SortThree() {
+	items := op.stackA.items
+	i1, i2, i3 := items[0], items[1], items[2]
+
+	if i1 > i2 && i2 < i3 && i1 < i3 {
+		op.SA()
+	} else if i1 > i2 && i2 > i3 {
+		op.SA()
+		op.RRA()
+	} else if i1 > i2 && i2 < i3 && i1 > i3 {
+		op.RA()
+	} else if i1 < i2 && i2 > i3 && i1 < i3 {
+		op.SA()
+		op.RA()
+	} else if i1 < i2 && i2 > i3 && i1 > i3 {
+		op.RRA()
+	}
+}
+
+func (op *StackOperator) MidSort(stack *Stack) {
 	if stack == op.stackA {
 		mid := op.findMid(op.stackA)
 		for range op.stackA.Size() {
@@ -31,11 +53,11 @@ func (op *StackOperator) CyclicSort(stack *Stack) {
 			if top < mid {
 				op.PB()
 			} else {
-				op.RA()
-				if op.stackA.Size() == 2 && top > mid {
-					op.SA()
+				if op.stackA.Size() == 3 {
+					op.SortThree()
 					break
 				}
+				op.RA()
 			}
 		}
 	} else if stack == op.stackB {
@@ -64,25 +86,6 @@ func (op *StackOperator) CyclicSort(stack *Stack) {
 	}
 }
 
-func (op *StackOperator) CompareTopElements(midA, midB int) {
-	topA, _ := op.stackA.Peek()
-	topB, _ := op.stackB.Peek()
-
-	if topA
-}
-
-func (op *StackOperator) NextElementIndex(stack *Stack, midPoint int) int {
-	elements := stack.items
-	index := 0
-	for i, element := range elements {
-		if element < midPoint {
-			index = i
-			break
-		}
-	}
-	return index
-}
-
 func (op *StackOperator) isStackASorted() bool {
 	if op.stackA.Size() <= 1 {
 		return true
@@ -100,7 +103,8 @@ func (op *StackOperator) isStackASorted() bool {
 }
 
 func (op *StackOperator) findMid(stack *Stack) int {
-	s := stack.items
+	s := make([]int, len(stack.items))
+	copy(s, stack.items)
 	sort.Ints(s)
 	return s[len(s)/2]
 }
